@@ -1,0 +1,5 @@
+board:
+  name: zigshutter
+  vendor: corna
+  socs:
+  - name: nrf52840

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+
+CONFIG_SOC_SERIES_NRF52X=y
+CONFIG_SOC_NRF52840_QIAA=y
+CONFIG_BOARD_ZIGSHUTTER=y
+
+# enable uart driver
+CONFIG_SERIAL=y
+
+# enable console
+CONFIG_CONSOLE=y
+#CONFIG_UART_CONSOLE=y
+
+# Enable MPU
+CONFIG_ARM_MPU=y
+
+# Enable hardware stack protection
+CONFIG_HW_STACK_PROTECTION=y
+
+# enable GPIO
+CONFIG_GPIO=y
+
+# Clock control
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
+
+# Board Kconfig.defconfig enables USB CDC ACM and should disable USB remote
+# wakeup by default. It needs to be disabled here, because the USB nrfx
+# driver always overwrites option from Kconfig mentioned above with the
+# imply from CONFIG_USB_NRFX.
+CONFIG_USB_DEVICE_REMOTE_WAKEUP=n
+
+# Adafruit bootloader support
+CONFIG_BUILD_OUTPUT_UF2=y
+CONFIG_ROM_START_OFFSET=0x1000
+CONFIG_BOOTLOADER_BOSSA=n

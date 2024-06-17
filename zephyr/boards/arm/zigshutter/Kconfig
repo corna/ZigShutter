@@ -1,0 +1,29 @@
+# ZigShutter board configuration
+
+# Copyright (c) 2024 Nicola Corna <nicola@corna.info>
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_ZIGSHUTTER
+
+config BOARD_ENABLE_DCDC
+	bool "DCDC mode"
+	select SOC_DCDC_NRF52X
+	default y
+
+config BOARD_ENABLE_DCDC_HV
+	bool "High Voltage DCDC converter"
+	select SOC_DCDC_NRF52X_HV
+	default n
+
+config BOARD_HAS_NRF5_BOOTLOADER
+	bool "Board has nRF5 bootloader"
+	default n
+	help
+	  If selected, applications are linked so that they can be loaded by Nordic
+	  nRF5 bootloader.
+
+config BOARD_SERIAL_BACKEND_CDC_ACM
+	bool "USB CDC"
+	default y
+
+endif # BOARD_ZIGSHUTTER

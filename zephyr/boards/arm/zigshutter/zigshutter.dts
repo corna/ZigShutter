@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2024 Nicola Corna <nicola@corna.info>
+ * Copyright (c) 2018-2023 Nordic Semiconductor ASA
+ * Copyright (c) 2017 Linaro Limited
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+#include "zigshutter-pinctrl.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	model = "zigshutter";
+	compatible = "others,zigshutter";
+
+	chosen {
+		zephyr,console = &cdc_acm_uart;
+		zephyr,shell-uart = &cdc_acm_uart;
+		zephyr,uart-mcumgr = &cdc_acm_uart;
+		zephyr,bt-mon-uart = &cdc_acm_uart;
+		zephyr,bt-c2h-uart = &cdc_acm_uart;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,ieee802154 = &ieee802154;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led_red: led_0 {
+			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+			label = "Red LED";
+		};
+		led_yellow: led_1 {
+			gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
+			label = "Yellow LED";
+		};
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		red_pwm_led: pwm_led_0 {
+			pwms = <&pwm0 0 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
+		};
+		yellow_pwm_led: pwm_led_1 {
+			pwms = <&pwm0 1 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
+		};
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+		button_dfu: button_0 {
+			gpios = <&gpio1 11 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button switch 'DFU'";
+			zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
+	/* These aliases are provided for compatibility with samples */
+	aliases {
+		sw0 = &button_dfu;
+		led0 = &led_red;
+		led = &led_yellow;
+		led-red = &led_red;
+		led-yellow = &led_yellow;
+		pwm-led0 = &red_pwm_led;
+		pwm-led1 = &yellow_pwm_led;
+		red-pwm-led = &red_pwm_led;
+		yellow-pwm-led = &yellow_pwm_led;
+		mcuboot-button0 = &button_dfu;
+		mcuboot-led0 = &led_red;
+		watchdog0 = &wdt0;
+	};
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&uicr {
+	nfct-pins-as-gpios;
+	gpio-as-nreset;
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&uart0 {
+	compatible = "nordic,nrf-uarte";
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&pwm0 {
+	status = "okay";
+	pinctrl-0 = <&pwm0_default>;
+	pinctrl-1 = <&pwm0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&ieee802154 {
+	status = "okay";
+};
+
+/* Include flash partition table.
+ * Two partition tables are available:
+ * fstab-stock		-compatible with Nordic nRF5 bootloader, default
+ * fstab-debugger	-to use an external debugger, w/o the nRF5 bootloader
+ */
+#include "fstab-stock.dtsi"
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+
+	cdc_acm_uart: cdc_acm_uart {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
